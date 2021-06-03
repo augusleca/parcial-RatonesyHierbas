@@ -41,23 +41,30 @@ aplicarHierbaRaton raton hierba = hierba raton
 -- a)
 hierbaBuena :: Hierba
 hierbaBuena raton = raton {edad = sqrt (edad raton)}
+
 -- b)
 hierbaVerde :: String -> Hierba
-hierbaVerde letras raton = raton {enfermedades = filtrarTerminaEn letras raton}
+hierbaVerde letrasEnfermedad raton = raton {enfermedades = filtrarEnfermedadTerminaEn letrasEnfermedad raton}
+
+filtrarEnfermedadTerminaEn :: String -> Raton -> [String]
+filtrarEnfermedadTerminaEn letrasEnfermedad raton = filter (enfermedadTerminaEn letrasEnfermedad) (enfermedades raton)
 
 enfermedadTerminaEn :: String -> String -> Bool
-enfermedadTerminaEn letras enfermedad = not (letras == (reverse (take (length letras) (reverse enfermedad))))
+enfermedadTerminaEn letrasEnfermedad = not.(terminacionesEnfermedades letrasEnfermedad)
 
-filtrarTerminaEn :: String -> Raton -> [String]
-filtrarTerminaEn letras raton = filter (enfermedadTerminaEn letras) (enfermedades raton)
+terminacionesEnfermedades :: String -> String -> Bool
+terminacionesEnfermedades letrasEnfermedad enfermedad = letrasEnfermedad == (reverse (take (length letrasEnfermedad) (reverse enfermedad)))
+
 -- c)
 alcachofa :: Hierba
 alcachofa raton
     | (peso raton) > 2 = raton {peso = (peso raton) * 0.9}
     | otherwise = raton {peso = (peso raton) * 0.95}
+
 -- d)
 hierbaZort :: Hierba
 hierbaZort raton = raton {edad = 0, enfermedades = []}
+
 -- e)
 hierbaDelDiablo :: Hierba
 hierbaDelDiablo = (eliminarEnfermedadesMenoresA 10).perderPeso
@@ -93,6 +100,7 @@ pdepCilina :: Medicamento
 pdepCilina = map hierbaVerde sufijosInfecciosas
 
 -- 4) Experimentos
+
 -- a)
 cantidadIdeal :: (Number -> Bool) -> Number
 cantidadIdeal condicion = cualNaturalCumplePrimero condicion naturalesInfinitos
@@ -108,7 +116,6 @@ cumpleCondicion condicion numero = condicion numero
 naturalesInfinitos = iterate (+1) 1
 
 -- b)
-
 lograEstabilizar :: Medicamento -> [Raton] -> Bool
 lograEstabilizar medicamento ratones = all condicionCumplirEstabilizar (aplicarMedicamentoRatones medicamento ratones)
 
@@ -142,3 +149,5 @@ cuantaPotenciaNecesaria potencia ratones
  ALGUN (any) raton que cumpla la cualidad deseada, en ese caso Haskell, al
  ser un programa lazy, se fijara elemento por elemento y cuando encuentre uno
  lo devolvera, sin importar que sea infinita la lista de ratones -}
+
+-- 6) 
