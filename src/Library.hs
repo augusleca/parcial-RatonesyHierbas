@@ -34,6 +34,10 @@ huesudo = UnRaton {
 -- 2) Tipos de hierbas
 
 type Hierba = Raton -> Raton
+
+aplicarHierbaRaton :: Raton -> Hierba -> Raton
+aplicarHierbaRaton raton hierba = hierba raton 
+
 -- a)
 hierbaBuena :: Hierba
 hierbaBuena raton = raton {edad = sqrt (edad raton)}
@@ -110,9 +114,6 @@ lograEstabilizar medicamento ratones = all condicionCumplirEstabilizar (aplicarM
 
 aplicarMedicamentoRatones :: Medicamento -> [Raton] -> [Raton]
 aplicarMedicamentoRatones medicamento ratones = map (aplicarMedicamentoRaton medicamento) ratones
-
-aplicarHierbaRaton :: Raton -> Hierba -> Raton
-aplicarHierbaRaton raton hierba = hierba raton 
 
 condicionCumplirEstabilizar :: Raton -> Bool
 condicionCumplirEstabilizar raton = (tieneSobrePeso raton == False) && (tieneMenosDe3Enfermedades raton)
