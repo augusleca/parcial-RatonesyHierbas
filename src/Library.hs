@@ -44,10 +44,10 @@ hierbaBuena raton = raton {edad = sqrt (edad raton)}
 
 -- b)
 hierbaVerde :: String -> Hierba
-hierbaVerde letrasEnfermedad raton = raton {enfermedades = filtrarEnfermedadTerminaEn letrasEnfermedad raton}
+hierbaVerde letrasEnfermedad raton = raton {enfermedades = filtrarEnfermedadTerminaEn letrasEnfermedad (enfermedades raton)}
 
-filtrarEnfermedadTerminaEn :: String -> Raton -> [String]
-filtrarEnfermedadTerminaEn letrasEnfermedad raton = filter (enfermedadTerminaEn letrasEnfermedad) (enfermedades raton)
+filtrarEnfermedadTerminaEn :: String -> [String] -> [String]
+filtrarEnfermedadTerminaEn letrasEnfermedad = filter (enfermedadTerminaEn letrasEnfermedad) 
 
 enfermedadTerminaEn :: String -> String -> Bool
 enfermedadTerminaEn letrasEnfermedad = not.(terminacionesEnfermedades letrasEnfermedad)
@@ -58,8 +58,14 @@ terminacionesEnfermedades letrasEnfermedad enfermedad = letrasEnfermedad == (rev
 -- c)
 alcachofa :: Hierba
 alcachofa raton
-    | (peso raton) > 2 = raton {peso = (peso raton) * 0.9}
-    | otherwise = raton {peso = (peso raton) * 0.95}
+    | (peso raton) > 2  = modificarPeso raton (- calcularPorcentaje 5 raton)
+    | otherwise = modificarPeso raton (- calcularPorcentaje 10 raton)
+
+calcularPorcentaje :: Number -> Raton -> Number
+calcularPorcentaje n = (*(n/100)).peso
+
+modificarPeso :: Raton -> Number -> Raton
+modificarPeso raton cantidad = raton {peso = max 0 (peso raton + cantidad)}
 
 -- d)
 hierbaZort :: Hierba
@@ -67,10 +73,7 @@ hierbaZort raton = raton {edad = 0, enfermedades = []}
 
 -- e)
 hierbaDelDiablo :: Hierba
-hierbaDelDiablo = (eliminarEnfermedadesMenoresA 10).perderPeso
-
-perderPeso :: Raton -> Raton
-perderPeso raton = raton {peso = max 0 (peso raton - 0.1)}
+hierbaDelDiablo = (eliminarEnfermedadesMenoresA 10).(flip modificarPeso (-0.1))
 
 eliminarEnfermedadesMenoresA :: Number -> Raton -> Raton
 eliminarEnfermedadesMenoresA numero raton = raton {enfermedades = filter ((>numero).length) (enfermedades raton)}
@@ -99,6 +102,7 @@ sufijosInfecciosas = ["sis","itis","emia","cocos"]
 pdepCilina :: Medicamento
 pdepCilina = map hierbaVerde sufijosInfecciosas
 
+
 -- 4) Experimentos
 
 -- a)
@@ -114,6 +118,7 @@ cumpleCondicion :: (Number -> Bool) -> Number -> Bool
 cumpleCondicion condicion numero = condicion numero
 
 naturalesInfinitos = iterate (+1) 1
+naturalesInfinitos' = [1..]
 
 -- b)
 lograEstabilizar :: Medicamento -> [Raton] -> Bool
@@ -126,10 +131,10 @@ condicionCumplirEstabilizar :: Raton -> Bool
 condicionCumplirEstabilizar raton = (tieneSobrePeso raton == False) && (tieneMenosDe3Enfermedades raton)
 
 tieneSobrePeso :: Raton -> Bool
-tieneSobrePeso raton = peso raton > 1
+tieneSobrePeso = (>1).peso
 
 tieneMenosDe3Enfermedades :: Raton -> Bool
-tieneMenosDe3Enfermedades raton = length (enfermedades raton) < 3
+tieneMenosDe3Enfermedades = (<3).length.enfermedades
 
 -- c)
 encontrarPotenciaIdealFatFast :: [Raton] -> Number
@@ -139,6 +144,8 @@ cuantaPotenciaNecesaria :: Number -> [Raton] -> Number
 cuantaPotenciaNecesaria potencia ratones 
     | lograEstabilizar (reduceFatFast potencia) ratones = potencia
     | otherwise = cuantaPotenciaNecesaria (potencia+1) ratones
+
+--cuantaPotenciaNecesaria' ratones = lograEstabilizar (reduceFatFast (cantidadIdeal)) ratones
 
 -- 5)
 
